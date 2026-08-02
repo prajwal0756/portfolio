@@ -7,7 +7,7 @@ const open = require('open').default;
 const express    = require('express');
 const cors       = require('cors');
 const path       = require('path');
-// const nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer');
 const rateLimit  = require('express-rate-limit');
 require('dotenv').config();
 
@@ -32,18 +32,18 @@ const contactLimiter = rateLimit({
 });
 
 // ── NODEMAILER SETUP ────────────────────────────────────────
-// const transporter = nodemailer.createTransport({
-//   service: 'gmail',
-//   auth: {
-//     user: process.env.EMAIL_USER,   // your Gmail address
-//     pass: process.env.EMAIL_PASS,   // Gmail App Password (not your real password)
-//   },
-// });
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,   // your Gmail address
+    pass: process.env.EMAIL_PASS,   // Gmail App Password (not your real password)
+  },
+});
 
-// transporter.verify((err) => {
-//   if (err) console.warn('⚠  Mail transporter not configured:', err.message);
-//   else      console.log('✅ Mail transporter ready');
-// });
+transporter.verify((err) => {
+  if (err) console.warn('⚠  Mail transporter not configured:', err.message);
+  else      console.log('✅ Mail transporter ready');
+});
 
 // ── PORTFOLIO DATA ──────────────────────────────────────────
 const portfolioData = {
@@ -184,69 +184,69 @@ app.post('/api/contact', contactLimiter, async (req, res) => {
   const timestamp = new Date().toLocaleString('en-US', { timeZone: 'Asia/Kathmandu' });
 
   // Email to Prajwal
-  // const mailToOwner = {
-  //   from:    `"Portfolio Contact" <${process.env.EMAIL_USER}>`,
-  //   to:      process.env.EMAIL_USER,
-  //   replyTo: email,
-  //   subject: `📬 Portfolio Message: ${subject || '(no subject)'}`,
-  //   html: `
-  //     <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#0b1120;color:#e8ecf4;border-radius:12px;overflow:hidden">
-  //       <div style="background:#6378ff;padding:24px 32px">
-  //         <h2 style="margin:0;color:#fff;font-size:1.3rem">New Portfolio Message</h2>
-  //         <p style="margin:4px 0 0;color:rgba(255,255,255,0.8);font-size:0.85rem">${timestamp}</p>
-  //       </div>
-  //       <div style="padding:32px">
-  //         <table style="width:100%;border-collapse:collapse">
-  //           <tr><td style="padding:8px 0;color:#8892a4;width:100px">From</td><td style="padding:8px 0"><strong>${name}</strong></td></tr>
-  //           <tr><td style="padding:8px 0;color:#8892a4">Email</td><td style="padding:8px 0"><a href="mailto:${email}" style="color:#6378ff">${email}</a></td></tr>
-  //           <tr><td style="padding:8px 0;color:#8892a4">Subject</td><td style="padding:8px 0">${subject || '—'}</td></tr>
-  //         </table>
-  //         <hr style="border:none;border-top:1px solid rgba(99,120,255,0.2);margin:20px 0"/>
-  //         <h3 style="color:#a78bfa;margin:0 0 12px">Message</h3>
-  //         <p style="line-height:1.8;white-space:pre-wrap;background:#111827;padding:16px;border-radius:8px;border-left:3px solid #6378ff">${message}</p>
-  //       </div>
-  //     </div>
-  //   `,
-  // };
+  const mailToOwner = {
+    from:    `"Portfolio Contact" <${process.env.EMAIL_USER}>`,
+    to:      process.env.EMAIL_USER,
+    replyTo: email,
+    subject: `📬 Portfolio Message: ${subject || '(no subject)'}`,
+    html: `
+      <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#0b1120;color:#e8ecf4;border-radius:12px;overflow:hidden">
+        <div style="background:#6378ff;padding:24px 32px">
+          <h2 style="margin:0;color:#fff;font-size:1.3rem">New Portfolio Message</h2>
+          <p style="margin:4px 0 0;color:rgba(255,255,255,0.8);font-size:0.85rem">${timestamp}</p>
+        </div>
+        <div style="padding:32px">
+          <table style="width:100%;border-collapse:collapse">
+            <tr><td style="padding:8px 0;color:#8892a4;width:100px">From</td><td style="padding:8px 0"><strong>${name}</strong></td></tr>
+            <tr><td style="padding:8px 0;color:#8892a4">Email</td><td style="padding:8px 0"><a href="mailto:${email}" style="color:#6378ff">${email}</a></td></tr>
+            <tr><td style="padding:8px 0;color:#8892a4">Subject</td><td style="padding:8px 0">${subject || '—'}</td></tr>
+          </table>
+          <hr style="border:none;border-top:1px solid rgba(99,120,255,0.2);margin:20px 0"/>
+          <h3 style="color:#a78bfa;margin:0 0 12px">Message</h3>
+          <p style="line-height:1.8;white-space:pre-wrap;background:#111827;padding:16px;border-radius:8px;border-left:3px solid #6378ff">${message}</p>
+        </div>
+      </div>
+    `,
+  };
 
 //   // Auto-reply to sender
-//   const mailToSender = {
-//     from:    `"Prajwal Subedi" <${process.env.EMAIL_USER}>`,
-//     to:      email,
-//     subject: 'Thanks for reaching out! — Prajwal Subedi',
-//     html: `
-//       <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#0b1120;color:#e8ecf4;border-radius:12px;overflow:hidden">
-//         <div style="background:#6378ff;padding:24px 32px">
-//           <h2 style="margin:0;color:#fff">Thanks for getting in touch, ${name}!</h2>
-//         </div>
-//         <div style="padding:32px">
-//           <p style="line-height:1.8;color:#8892a4">I received your message and will get back to you as soon as possible — usually within 24–48 hours.</p>
-//           <p style="line-height:1.8;color:#8892a4">In the meantime, feel free to explore my work:</p>
-//           <div style="margin:20px 0;display:flex;flex-direction:column;gap:8px">
-//             <a href="https://github.com/prajwalsubedi" style="color:#6378ff;text-decoration:none">🐙 GitHub Projects</a>
-//             <a href="https://curioverse.blog" style="color:#6378ff;text-decoration:none">✍️ Curioverse Blog</a>
-//             <a href="https://youtube.com/@prajwalsubedi" style="color:#6378ff;text-decoration:none">🎬 YouTube Channel</a>
-//           </div>
-//           <p style="color:#8892a4;line-height:1.8;margin-top:24px">Best regards,<br/><strong style="color:#e8ecf4">Prajwal Subedi</strong><br/><span style="color:#6378ff;font-size:0.85rem">Data Scientist &amp; Creative Technologist</span></p>
-//         </div>
-//       </div>
-//     `,
-//   };
+  const mailToSender = {
+    from:    `"Prajwal Subedi" <${process.env.EMAIL_USER}>`,
+    to:      email,
+    subject: 'Thanks for reaching out! — Prajwal Subedi',
+    html: `
+      <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#0b1120;color:#e8ecf4;border-radius:12px;overflow:hidden">
+        <div style="background:#6378ff;padding:24px 32px">
+          <h2 style="margin:0;color:#fff">Thanks for getting in touch, ${name}!</h2>
+        </div>
+        <div style="padding:32px">
+          <p style="line-height:1.8;color:#8892a4">I received your message and will get back to you as soon as possible — usually within 24–48 hours.</p>
+          <p style="line-height:1.8;color:#8892a4">In the meantime, feel free to explore my work:</p>
+          <div style="margin:20px 0;display:flex;flex-direction:column;gap:8px">
+            <a href="https://github.com/prajwalsubedi" style="color:#6378ff;text-decoration:none">🐙 GitHub Projects</a>
+            <a href="https://curioverse.blog" style="color:#6378ff;text-decoration:none">✍️ Curioverse Blog</a>
+            <a href="https://youtube.com/@prajwalsubedi" style="color:#6378ff;text-decoration:none">🎬 YouTube Channel</a>
+          </div>
+          <p style="color:#8892a4;line-height:1.8;margin-top:24px">Best regards,<br/><strong style="color:#e8ecf4">Prajwal Subedi</strong><br/><span style="color:#6378ff;font-size:0.85rem">Data Scientist &amp; Creative Technologist</span></p>
+        </div>
+      </div>
+    `,
+  };
 
-//   try {
-//     await transporter.sendMail(mailToOwner);
-//     await transporter.sendMail(mailToSender);
-//     console.log(`📬 Contact form: ${name} <${email}> — ${new Date().toISOString()}`);
-//     res.json({ success: true, message: 'Message sent successfully!' });
-//   } catch (err) {
-//     console.error('Mail error:', err.message);
-//     // Still return success if email not configured (dev mode)
-//     if (process.env.NODE_ENV !== 'production') {
-//       console.log('📝 [DEV] Form data received:', { name, email, subject, message });
-//       return res.json({ success: true, message: 'Message logged (email not configured in dev mode).' });
-//     }
-//     res.status(500).json({ error: 'Failed to send message. Please try again later.' });
-//   }
+  try {
+    await transporter.sendMail(mailToOwner);
+    await transporter.sendMail(mailToSender);
+    console.log(`📬 Contact form: ${name} <${email}> — ${new Date().toISOString()}`);
+    res.json({ success: true, message: 'Message sent successfully!' });
+  } catch (err) {
+    console.error('Mail error:', err.message);
+    // Still return success if email not configured (dev mode)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('📝 [DEV] Form data received:', { name, email, subject, message });
+      return res.json({ success: true, message: 'Message logged (email not configured in dev mode).' });
+    }
+    res.status(500).json({ error: 'Failed to send message. Please try again later.' });
+  }
 });
 
 // Health check
