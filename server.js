@@ -242,11 +242,16 @@ app.post('/api/contact', contactLimiter, async (req, res) => {
   };
 
   try {
-    await resend.emails.send(mailToOwner);
+    // await resend.emails.send(mailToOwner);
     // console.log("EMAIL_USER:", process.env.EMAIL_USER);
     // console.log("EMAIL_PASS exists:", !!process.env.EMAIL_PASS);
     // console.log("Starting email send...");
-    await resend.emails.send(mailToSender);
+    // await resend.emails.send(mailToSender);
+    const ownerResult = await resend.emails.send(mailToOwner);
+    console.log("Owner Result:", ownerResult);
+
+    const senderResult = await resend.emails.send(mailToSender);
+    console.log("Sender Result:", senderResult);
     console.log(`📬 Contact form: ${name} <${email}> — ${new Date().toISOString()}`);
     res.json({ success: true, message: 'Message sent successfully!' });
   } catch (err) {
