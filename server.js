@@ -7,10 +7,12 @@ const open = require('open').default;
 const express    = require('express');
 const cors       = require('cors');
 const path       = require('path');
-const nodemailer = require('nodemailer');
+// const nodemailer = require('nodemailer');
 const rateLimit  = require('express-rate-limit');
 require('dotenv').config();
+const { Resend } = require("resend");
 
+const resend = new Resend(process.env.RESEND_API_KEY);
 const app  = express();
 app.set("trust proxy", 1);
 
@@ -33,23 +35,23 @@ const contactLimiter = rateLimit({
 });
 
 // ── NODEMAILER SETUP ────────────────────────────────────────
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  connectionTimeout: 30000,
-  greetingTimeout: 30000,
-  socketTimeout: 30000,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+// const transporter = nodemailer.createTransport({
+//   host: "smtp.gmail.com",
+//   port: 465,
+//   secure: true,
+//   connectionTimeout: 30000,
+//   greetingTimeout: 30000,
+//   socketTimeout: 30000,
+//   auth: {
+//     user: process.env.EMAIL_USER,
+//     pass: process.env.EMAIL_PASS,
+//   },
+// });
 
-transporter.verify((err) => {
-  if (err) console.error(err);
-  else      console.log('✅ Mail transporter ready');
-});
+// transporter.verify((err) => {
+//   if (err) console.error(err);
+//   else      console.log('✅ Mail transporter ready');
+// });
 
 // ── PORTFOLIO DATA ──────────────────────────────────────────
 const portfolioData = {
@@ -240,11 +242,11 @@ app.post('/api/contact', contactLimiter, async (req, res) => {
   };
 
   try {
-    await transporter.sendMail(mailToOwner);
-    console.log("EMAIL_USER:", process.env.EMAIL_USER);
-    console.log("EMAIL_PASS exists:", !!process.env.EMAIL_PASS);
-    console.log("Starting email send...");
-    await transporter.sendMail(mailToSender);
+    await resend.emails.send(mailToOwner);
+    // console.log("EMAIL_USER:", process.env.EMAIL_USER);
+    // console.log("EMAIL_PASS exists:", !!process.env.EMAIL_PASS);
+    // console.log("Starting email send...");
+    await resend.emails.send(mailToSender);
     console.log(`📬 Contact form: ${name} <${email}> — ${new Date().toISOString()}`);
     res.json({ success: true, message: 'Message sent successfully!' });
   } catch (err) {
