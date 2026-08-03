@@ -12,6 +12,7 @@ const rateLimit  = require('express-rate-limit');
 require('dotenv').config();
 
 const app  = express();
+app.set("trust proxy", 1);
 const PORT = process.env.PORT || 3000;
 
 // ── MIDDLEWARE ──────────────────────────────────────────────
@@ -33,10 +34,12 @@ const contactLimiter = rateLimit({
 
 // ── NODEMAILER SETUP ────────────────────────────────────────
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true, // true for port 465
   auth: {
-    user: process.env.EMAIL_USER,   // your Gmail address
-    pass: process.env.EMAIL_PASS,   // Gmail App Password (not your real password)
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
 });
 
