@@ -238,11 +238,14 @@ app.post('/api/contact', contactLimiter, async (req, res) => {
 
   try {
     await transporter.sendMail(mailToOwner);
+    console.log("EMAIL_USER:", process.env.EMAIL_USER);
+    console.log("EMAIL_PASS exists:", !!process.env.EMAIL_PASS);
+    console.log("Starting email send...");
     await transporter.sendMail(mailToSender);
     console.log(`📬 Contact form: ${name} <${email}> — ${new Date().toISOString()}`);
     res.json({ success: true, message: 'Message sent successfully!' });
   } catch (err) {
-    console.error('Mail error:', err.message);
+    console.error("Mail error:", err);;
     // Still return success if email not configured (dev mode)
     if (process.env.NODE_ENV !== 'production') {
       console.log('📝 [DEV] Form data received:', { name, email, subject, message });
@@ -272,6 +275,5 @@ app.listen(PORT, () => {
   console.log(`   POST /api/contact`);
   console.log(`   GET  /api/health\n`);
 
-  // Auto-open browser
-  open(`http://localhost:${PORT}`);
+
 });
