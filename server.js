@@ -58,7 +58,7 @@ const portfolioData = {
   profile: {
     name:     'Prajwal Subedi',
     title:    'Aspiring Data Scientist & Creative Technologist',
-    email:    'prajwal@email.com',
+    email:    'prajwalsubedi7b@email.com',
     location: 'Nepal',
     bio:      'Turning raw data into insight and ideas into stories. Passionate about machine learning, data visualization, and creative content.',
     socials: {
