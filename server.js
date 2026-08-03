@@ -13,7 +13,7 @@ require('dotenv').config();
 
 const app  = express();
 app.set("trust proxy", 1);
-const PORT = process.env.PORT || 3000;
+
 
 // ── MIDDLEWARE ──────────────────────────────────────────────
 app.use(cors());
@@ -36,7 +36,10 @@ const contactLimiter = rateLimit({
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 465,
-  secure: true, // true for port 465
+  secure: true,
+  connectionTimeout: 30000,
+  greetingTimeout: 30000,
+  socketTimeout: 30000,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
@@ -44,7 +47,7 @@ const transporter = nodemailer.createTransport({
 });
 
 transporter.verify((err) => {
-  if (err) console.warn('⚠  Mail transporter not configured:', err.message);
+  if (err) console.error(err);
   else      console.log('✅ Mail transporter ready');
 });
 
@@ -264,7 +267,7 @@ app.get('/api/health', (req, res) => {
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
-
+const PORT = process.env.PORT || 3000;
 // ── START ───────────────────────────────────────────────────
 app.listen(PORT, () => {
   console.log(`\n🚀 Portfolio server running at http://localhost:${PORT}`);
